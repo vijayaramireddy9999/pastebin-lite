@@ -2,8 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require("path");
 const { createClient } = require('redis');
-const { v4: uuidv4 } = require('uuid');
-
+const crypto = require('crypto'); // Built-in to Node.js (no install needed)
 const app = express();
 
 // Configuration
@@ -45,7 +44,8 @@ app.post('/api/pastes', async (req, res) => {
         return res.status(400).json({ error: "content is required" });
     }
 
-    const id = uuidv4();
+    // Replace uuidv4() with this:
+    const id = crypto.randomUUID();
     const expires_at = ttl_seconds ? Date.now() + (ttl_seconds * 1000) : null;
 
     const paste = {
