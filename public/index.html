@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pastebin-Lite Tester</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f4f7f6; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        textarea { width: 100%; height: 150px; margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; word-break: break-all; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Create New Paste</h1>
+        <textarea id="content" placeholder="Paste your text here..."></textarea>
+        
+        <div class="input-group">
+            <input type="number" id="ttl" placeholder="Expiry (Seconds) - e.g. 60">
+            <input type="number" id="views" placeholder="Max Views - e.g. 5">
+        </div>
+        
+        <button onclick="submitPaste()">Create Shareable Link</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function submitPaste() {
+            const resultDiv = document.getElementById('result');
+            const payload = {
+                content: document.getElementById('content').value,
+                ttl_seconds: parseInt(document.getElementById('ttl').value) || null,
+                max_views: parseInt(document.getElementById('views').value) || null
+            };
+
+            try {
+                const response = await fetch('/api/pastes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.style.display = 'block';
+                if (response.ok) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `<strong>Paste Created!</strong><br>URL: <a href="${data.url}" target="_blank">${data.url}</a>`;
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerText = "Error: " + (data.error || "Unknown error");
+                }
+            } catch (err) {
+                alert("Failed to connect to server. Is it running?");
+            }
+        }
+    </script>
+</body>
+</html>

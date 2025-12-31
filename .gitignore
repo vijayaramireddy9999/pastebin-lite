@@ -1,0 +1,13 @@
+# Ignore dependency folders
+node_modules/
+
+# Ignore local environment secrets (CRITICAL)
+.env
+
+# Ignore OS metadata
+.DS_Store
+Thumbs.db
+
+# Ignore build artifacts
+dist/
+build/
